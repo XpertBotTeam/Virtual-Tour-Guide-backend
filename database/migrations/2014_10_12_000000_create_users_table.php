@@ -18,8 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('phone');
-            $table->string('profile_image')->nullable();
-            $table->string('role')->default('visitor');
+            $table->string('role')->nullable()->default('visitor');
             $table->rememberToken();
         });
     }
