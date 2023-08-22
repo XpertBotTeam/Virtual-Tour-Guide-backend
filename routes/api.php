@@ -15,5 +15,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('sign-up',[UserController::class,'store']);
-Route::post('login',[UserController::class,'login']);
+Route::post('/sign-up',[UserController::class,'store']);
+Route::post('/login',[UserController::class,'login']);

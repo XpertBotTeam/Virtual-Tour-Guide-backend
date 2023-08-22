@@ -20,11 +20,11 @@ class UserController extends Controller
         }
         // validate the data 
         $validator = Validator::make($request->all(), [
-            'first_name' => ['required', 'min:2'],
-            'last_name' => ['required', 'min:2'],
-            'email' => ['required', 'email'],
-            'password' => ['required', 'min:7', 'max:16'],
-            'phone' => ['required', 'min:8', 'max:15'],
+            'first_name' => ['required', 'min:2','max:100','string'],
+            'last_name' => ['required', 'min:2','max:100','string'],
+            'email' => ['required', 'email',Rule::unique('users','email')],
+            'password' => ['required', 'min:7', 'max:100','regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/'],
+            'phone' => [ 'min:8', 'max:15'],
         ]);
         // handle validation errors
         if ($validator->fails()) {
