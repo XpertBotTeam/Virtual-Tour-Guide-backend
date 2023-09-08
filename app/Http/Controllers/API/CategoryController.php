@@ -3,35 +3,59 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function store(Request $request){
-        $data = $request->validate([
-            'name'=>['required','min:7']
-        ]);
-        $category = new Category();
-        $category->fill($data);
-        $result = $category->save();
-        if($result){
-            return response()->json(['status' => 'true', 'message' => 'Categpry Added successfully']);
-        }else{
-        return response()->json(['status' => 'false', 'message' => 'Creation Failed']);
-        }
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //
     }
-    public function destroy($id){
-        $category = Category::find($id);
-        if(isset($category)){
-             $result = $category->delete();
-            if($result){
-                return response()->json(['status' => 'true', 'message' => 'Categpry Deleted successfully']);
-            }else{
-                return response()->json(['status' => 'false', 'message' => 'Delete Failed']);
-            }
-        }else{
-            return response()->json(['status'=>'false','message'=>'Invalid Id']);
-        }
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(CategoryRequest $request)
+    {
+        $category = Category::create($request->all());
+        return response()->json(['success'=>'true','message'=>'Category created successfully']);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $category = Category::findOrFail($id);
+        $category->delete();
+        return response()->json(['success' => 'true', 'message' => 'Category deleted successfully']);
     }
 }

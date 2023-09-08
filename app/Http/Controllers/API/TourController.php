@@ -3,86 +3,56 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Review;
+use App\Http\Requests\TourRequest;
 use App\Models\Tour;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Validation\Rule;
 
 class TourController extends Controller
 {
-    public function index(Tour $tour){
-        $result = $tour->all();
-        return response()->json(['status'=>'success','tours'=>$result]);
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $per_page = $request->get('per_page');
+        $tours = Tour::paginate($per_page);
+        return response()->json(['status' => 'success', 'tours' => $tours]);
     }
-public function store(Request $request)
-{
-    $data = $request->validate([
-        'name' => ['required', 'string', 'min:2'],
-        'user_id' => ['required', Rule::exists('users', 'id')],
-        'category_id' => ['required', Rule::exists('categories', 'id')],
-        'address' => ['required', 'string'],
-        'city' => ['required', 'string'],
-        'country' => ['required', 'string'],
-        'phone' => ['required', 'string'],
-        'email' => ['required', 'email', Rule::exists('users', 'email')],
-        'website' => ['required', 'url'],
-        'description' => ['required', 'string'],
-        'latitude' => ['required', 'string'],
-        'longtitude' => ['required', 'string'],
-        'tour_video' => ['required', 'url'],
-        'rating' => ['required', 'numeric', 'min:0', 'max:5'],
-        'price' => ['required', 'numeric'],
-    ]);
-    $tour = new Tour();
-    $tour->fill($data);
-    $result = $tour->save();
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(TourRequest $request)
+    {
+        $tour = Tour::create($request->all());
+        return response()->json(['success'=>'true','Tour Created Successfully',$tour]);
+    }
 
-    if ($result) {
-        return response()->json(['status' => 'true', 'message' => 'Tour created successfully']);
-    } else {
-        return response()->json(['status' => 'false', 'message' => 'Creation Failed']);
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $tour = Tour::findOrFail($id);
+        return response()->json(['sucess'=>'true',$tour]);
     }
-  }
-  public function show($id){
-    $tour = Tour::find($id);
-    $reviews = Review::where('tour_id', $id)->get();
-    return response()->json(['status'=>'success','tour'=>$tour,'reviews'=>$reviews]);
-  }
-  public function update($id,Request $request){
-    $tour = Tour::find($id);
-       $data = $request->validate([
-        'name' => ['required', 'string', 'min:2'],
-        'user_id' => ['required', Rule::exists('users', 'id')],
-        'category_id' => ['required', Rule::exists('categories', 'id')],
-        'address' => ['required', 'string'],
-        'city' => ['required', 'string'],
-        'country' => ['required', 'string'],
-        'phone' => ['required', 'string'],
-        'email' => ['required', 'email', Rule::exists('users', 'email')],
-        'website' => ['required', 'url'],
-        'description' => ['required', 'string'],
-        'latitude' => ['required', 'string'],
-        'longtitude' => ['required', 'string'],
-        'tour_video' => ['required', 'url'],
-        'rating' => ['required', 'numeric', 'min:0', 'max:5'],
-        'price' => ['required', 'numeric'],
-    ]);
-    $tour->fill($data);
-    $result = $tour->save();
-      if ($result) {
-        return response()->json(['status' => 'true', 'message' => 'Tour Updated successfully']);
-    } else {
-        return response()->json(['status' => 'false', 'message' => 'Update Failed']);
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(TourRequest $request, string $id)
+    {
+        $tour = Tour::findOrFail($id);
+        $tour->update($request->all());
+        return response()->json(['success'=>'true','message'=>'Tour Updated Successfully'],201);
     }
-}
-public function destroy($id){
-    $tour = Tour::find($id);
-    $result = $tour->delete();
-      if ($result) {
-        return response()->json(['status' => 'true', 'message' => 'Tour Deleted successfully']);
-    } else {
-        return response()->json(['status' => 'false', 'message' => 'Delete Failed']);
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $tour = Tour::findOrFail($id);
+        $tour->delete();
+        return response()->json(['success'=>'true','message'=>'Tour Deleted Successfully'],203);
     }
-}
 }

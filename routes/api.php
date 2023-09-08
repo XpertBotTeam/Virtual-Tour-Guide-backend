@@ -4,6 +4,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\API\TourController;
+use App\Http\Controllers\API\TourUserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,17 +21,17 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => 'guest'], function () {
     Route::post('register',[AuthController::class,'store']);
     Route::post('login',[AuthController::class,'login']);
+    Route::get('getTours', [TourController::class, 'index']);
+    Route::get('getTours/{tour}', [TourController::class, 'show']);
 });
 // Auth Routes
 Route::group(['middleware' => 'auth:sanctum'], function(){
-    Route::get('tours',[TourController::class,'index']);
-    Route::post('createTour',[TourController::class,'store']);
-    Route::get('tours/{tour:id}',[TourController::class,'show']);
-    Route::put('tours/{tour:id}',[TourController::class,'update']);
-    Route::delete('tours/{tour:id}',[TourController::class,'destroy']);
-    Route::post('tours/{tour}/reviews',[ReviewController::class,'store']);
-    Route::delete('reviews/{review}', [ReviewController::class,'destroy']);
-    Route::post('createCategory',[CategoryController::class,'store']);
-    Route::delete('categories/{category}',[CategoryController::class,'destroy']);
+    Route::group(['middleware'=>'admin'],function(){
+        Route::resource('tours',TourController::class);
+        Route::resource('categories',CategoryController::class);
     });
+    Route::resource('userTours', TourUserController::class);
+    Route::post('tours/{tour}/reviews', [ReviewController::class, 'store']);
+    Route::delete('reviews/{review}', [ReviewController::class, 'destroy']);
+});
 

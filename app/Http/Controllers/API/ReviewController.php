@@ -3,36 +3,34 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ReviewRequest;
 use App\Models\Review;
-use App\Models\Tour;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
-    public function store(Request $request,Tour $tour){
-        $data = $request->validate([
-            'user_id'=>['required',Rule::exists('users','id')],
-            'tour_id'=>['required',Rule::exists('tours','id')],
-            'description'=>['required','string','min:5']
-        ]);
-        $review = new Review();
-        $review->user_id = auth()->id();
-        $review->tour_id = $tour->id;
-        $review->description = $data['description'];
+    public function store(ReviewRequest $reviewRequest , $id){
+        $data = $reviewRequest->all();
+        $review = new Review($data);
+        $review->user_id = $data['user_id'];
+        $review->tour_id = $id;
         $result = $review->save();
         if($result){
-            return response()->json(['status' => 'true', 'message' => 'Review Added successfully']);
-        }else{
-        return response()->json(['status' => 'false', 'message' => 'Creation Failed']);
+            return response()->json(['status'=>'true','message'=>'Review Created Successfully'],201);
         }
+        return response()->json(['status'=>'false','message'=>'Create Failed'],201);
     }
-    public function destroy(Review $review){
-        $result = $review->delete();
-          if($result){
-            return response()->json(['status' => 'true', 'message' => 'Review Deleted successfully']);
-        }else{
-        return response()->json(['status' => 'false', 'message' => 'Delete Failed']);
+    public function destroy($id)
+    {
+        $review = Review::findOrFail($id);
+        if ($review->user_id != Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
         }
+        $result = $review->delete();
+        if ($result) {
+            return response()->json(['status' => 'true', 'message' => 'Review Deleted successfully']);
+        }
+        return response()->json(['status' => 'false', 'message' => 'Delete Failed']);
     }
 }
