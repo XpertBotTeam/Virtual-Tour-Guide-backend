@@ -54,6 +54,16 @@ class SuperTourController extends Controller
     public function update(TourRequest $request, string $id)
     {
         $tour = Tour::findOrFail($id);
+        $link = $request['tour_video'];
+        $patternMobile = '/youtu\.be\/([A-Za-z0-9_-]+)/';
+        $patternWeb = '/watch\?v=([A-Za-z0-9_-]+)/';
+
+        if (preg_match($patternMobile, $link, $matches)) {
+            $videoId = $matches[1];
+        } elseif (preg_match($patternWeb, $link, $matches)) {
+            $videoId = $matches[1];
+        }
+        $request['tour_video'] = $videoId;
         $tour->update($request->all());
         return response()->json(['success' => 'true', 'message' => 'Tour Updated Successfully'], 201);
     }

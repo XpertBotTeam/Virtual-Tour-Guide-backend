@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Review;
 use App\Models\Tour;
 use Illuminate\Http\Request;
@@ -12,7 +13,8 @@ class UserTourController extends Controller
     {
         $per_page = $request->get('per_page');
         $tours = Tour::paginate($per_page);
-        return response()->json(['status' => 'true', 'tours' => $tours]);
+        $catrgories = Category::all();
+        return response()->json(['status' => 'true', 'tours' => $tours,'categories'=>$catrgories]);
     }
     public function show(string $id)
     {
