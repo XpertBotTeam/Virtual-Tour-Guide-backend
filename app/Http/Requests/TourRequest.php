@@ -24,20 +24,20 @@ class TourRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:2'],
-            'user_id' => ['required', Rule::exists('users', 'id')],
-            'category_id' => ['required', Rule::exists('categories', 'id')],
+            'user_id' => [Rule::exists('users', 'id')],
+            'category_id' => ['required',Rule::exists('categories', 'id')],
             'address' => ['required', 'string'],
             'city' => ['required', 'string'],
             'country' => ['required', 'string'],
-            'phone' => ['required', 'string'],
-            'email' => ['required', 'email', Rule::exists('users', 'email')],
-            'website' => ['required', 'url'],
+            'phone' => ['string'],
+            'email' => ['required', 'email'],
+            'website' => ['url'],
             'description' => ['required', 'string'],
-            'latitude' => ['required', 'string'],
-            'longtitude' => ['required', 'string'],
+            'latitude' => ['required', 'numeric'],
+            'longtitude' => ['required', 'numeric'],
             'tour_video' => ['required', 'url'],
-            'rating' => ['required', 'numeric', 'min:0', 'max:5'],
-            'price' => ['required', 'numeric'],
+            'rating' => ['numeric', 'min:0', 'max:5'],
+            'price' => ['numeric'],
         ];
     }
 }

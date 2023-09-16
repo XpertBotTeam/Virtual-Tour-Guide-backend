@@ -26,8 +26,8 @@ return new class extends Migration
             $table->string('latitude');
             $table->string('longtitude');
             $table->string('tour_video');
-            $table->string('rating');
-            $table->string('price')->nullable();
+            $table->string('rating')->default(0);
+            $table->string('price')->default(0);
             $table->timestamps();
         });
     }

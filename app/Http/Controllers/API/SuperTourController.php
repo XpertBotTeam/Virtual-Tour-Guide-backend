@@ -4,10 +4,11 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TourRequest;
+use App\Models\Review;
 use App\Models\Tour;
 use Illuminate\Http\Request;
 
-class TourController extends Controller
+class SuperTourController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,8 +24,19 @@ class TourController extends Controller
      */
     public function store(TourRequest $request)
     {
+        $request['user_id'] = auth()->id();
+        $link = $request['tour_video'];
+        $patternMobile = '/youtu\.be\/([A-Za-z0-9_-]+)/';
+        $patternWeb = '/watch\?v=([A-Za-z0-9_-]+)/';
+
+        if (preg_match($patternMobile, $link, $matches)) {
+            $videoId = $matches[1];
+        } elseif (preg_match($patternWeb, $link, $matches)) {
+            $videoId = $matches[1];
+        }
+        $request['tour_video'] = $videoId;
         $tour = Tour::create($request->all());
-        return response()->json(['success'=>'true','Tour Created Successfully',$tour]);
+        return response()->json(['success' => 'true', 'message'=>'Tour Created Successfully', 'tour'=>$tour]);
     }
 
     /**
@@ -33,7 +45,7 @@ class TourController extends Controller
     public function show(string $id)
     {
         $tour = Tour::findOrFail($id);
-        return response()->json(['sucess'=>'true',$tour]);
+        return response()->json(['sucess' => 'true', 'tour' => $tour]);
     }
 
     /**
@@ -43,7 +55,7 @@ class TourController extends Controller
     {
         $tour = Tour::findOrFail($id);
         $tour->update($request->all());
-        return response()->json(['success'=>'true','message'=>'Tour Updated Successfully'],201);
+        return response()->json(['success' => 'true', 'message' => 'Tour Updated Successfully'], 201);
     }
 
     /**
@@ -53,6 +65,6 @@ class TourController extends Controller
     {
         $tour = Tour::findOrFail($id);
         $tour->delete();
-        return response()->json(['success'=>'true','message'=>'Tour Deleted Successfully'],203);
+        return response()->json(['success' => 'true', 'message' => 'Tour Deleted Successfully'], 203);
     }
 }
