@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('website')->nullable();
             $table->string('description');
             $table->string('latitude');
-            $table->string('longtitude');
+            $table->string('longitude');
             $table->string('tour_video');
             $table->string('rating')->default(0);
             $table->string('price')->default(0);

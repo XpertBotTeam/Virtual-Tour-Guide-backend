@@ -23,8 +23,6 @@ class ReviewRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => [Rule::exists('users', 'id')],
-            'tour_id' => [Rule::exists('tours', 'id')],
             'description' => ['required', 'string', 'min:5']
         ];
     }

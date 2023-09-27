@@ -10,16 +10,17 @@ use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
-    public function store(ReviewRequest $reviewRequest , $id){
+    public function store(ReviewRequest $reviewRequest, $id)
+    {
         $data = $reviewRequest->all();
-        $review = new Review($data);
+        $data['user_id'] = auth()->id();
+        $data['tour_id'] = $id;
+        $review = new Review();
         $review->user_id = $data['user_id'];
-        $review->tour_id = $id;
-        $result = $review->save();
-        if($result){
-            return response()->json(['status'=>'true','message'=>'Review Created Successfully'],201);
-        }
-        return response()->json(['status'=>'false','message'=>'Create Failed'],201);
+        $review->tour_id = $data['tour_id'];
+        $review->description = $data['description'];
+        $review->save();
+        return response()->json(['status' => 'true', 'message' => 'Review Created Successfully'], 201);
     }
     public function destroy($id)
     {
