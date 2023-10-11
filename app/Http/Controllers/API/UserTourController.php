@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\Category;
 use App\Models\Review;
@@ -14,7 +16,7 @@ class UserTourController extends Controller
         $per_page = $request->get('per_page');
         $tours = Tour::paginate($per_page);
         $catrgories = Category::all();
-        return response()->json(['status' => 'true', 'tours' => $tours,'categories'=>$catrgories]);
+        return response()->json(['status' => 'true', 'tours' => $tours, 'categories' => $catrgories]);
     }
     public function show(string $id)
     {

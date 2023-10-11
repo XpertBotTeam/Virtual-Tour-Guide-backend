@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TourRequest;
 use App\Models\Review;
 use App\Models\Tour;
+use App\Http\Controllers\API\AdminTourController;
 use Illuminate\Http\Request;
 
 class SuperTourController extends Controller
@@ -25,18 +26,10 @@ class SuperTourController extends Controller
     public function store(TourRequest $request)
     {
         $request['user_id'] = auth()->id();
-        $link = $request['tour_video'];
-        $patternMobile = '/youtu\.be\/([A-Za-z0-9_-]+)/';
-        $patternWeb = '/watch\?v=([A-Za-z0-9_-]+)/';
-
-        if (preg_match($patternMobile, $link, $matches)) {
-            $videoId = $matches[1];
-        } elseif (preg_match($patternWeb, $link, $matches)) {
-            $videoId = $matches[1];
-        }
+        $videoId = $this->extractVideoIdFromLink($request['tour_video']);
         $request['tour_video'] = $videoId;
         $tour = Tour::create($request->all());
-        return response()->json(['success' => 'true', 'message'=>'Tour Created Successfully', 'tour'=>$tour]);
+        return response()->json(['success' => 'true', 'message' => 'Tour Created Successfully', 'tour' => $tour]);
     }
 
     /**
@@ -54,15 +47,7 @@ class SuperTourController extends Controller
     public function update(TourRequest $request, string $id)
     {
         $tour = Tour::findOrFail($id);
-        $link = $request['tour_video'];
-        $patternMobile = '/youtu\.be\/([A-Za-z0-9_-]+)/';
-        $patternWeb = '/watch\?v=([A-Za-z0-9_-]+)/';
-
-        if (preg_match($patternMobile, $link, $matches)) {
-            $videoId = $matches[1];
-        } elseif (preg_match($patternWeb, $link, $matches)) {
-            $videoId = $matches[1];
-        }
+        $videoId = $this->extractVideoIdFromLink($request['tour_video']);
         $request['tour_video'] = $videoId;
         $tour->update($request->all());
         return response()->json(['success' => 'true', 'message' => 'Tour Updated Successfully'], 201);
@@ -76,5 +61,27 @@ class SuperTourController extends Controller
         $tour = Tour::findOrFail($id);
         $tour->delete();
         return response()->json(['success' => 'true', 'message' => 'Tour Deleted Successfully'], 203);
+    }
+    private function extractVideoIdFromLink($videoLink)
+    {
+        $patternMobile = '/youtu\.be\/([A-Za-z0-9_-]+)/';
+        $patternWeb = '/watch\?v=([A-Za-z0-9_-]+)/';
+        $videoId = '';
+
+        if (preg_match($patternMobile, $videoLink, $matches)) {
+            $videoId = $matches[1];
+        } elseif (preg_match($patternWeb, $videoLink, $matches)) {
+            $videoId = $matches[1];
+        } else {
+            // Extract the video ID from the videoLink with query parameters
+            $queryString = parse_url($videoLink, PHP_URL_QUERY);
+            parse_str($queryString, $queryArray);
+
+            if (isset($queryArray['v'])) {
+                $videoId = $queryArray['v'];
+            }
+        }
+
+        return $videoId;
     }
 }
